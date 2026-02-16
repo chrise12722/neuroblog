@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from 'next/link';
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { SignInButton, UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 export const Navigation = () => {
   const pathname = usePathname();
@@ -43,6 +44,14 @@ export const Navigation = () => {
                 <Link href="/create-blog" className={pathname === "/create-blog" ? "font-bold mr-8" : "mr-8 text-black hover-text-blue-100 transiton duration-200 hover:scale-105"}>
                   Create Blog
                 </Link>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <button className='text-black font-bold hover:text-white hover:scale-105 cursor-pointer'>Sign In</button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
               </div>
             </div>
             <div className="md:hidden flex items-center">
@@ -97,6 +106,14 @@ export const Navigation = () => {
               <Link href="/create-blog" className={`${pathname === "/create-blog" ? "font-bold mr-8" : "mr-8 text-black"} block`}>
                 Create Blog
               </Link>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className='text-black font-bold hover:text-white hover:scale-105 cursor-pointer'>Sign In</button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
             </div>
           </div>
         )}
