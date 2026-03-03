@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
+
 const supabaseUrl = process.env.SUPABASE_PROJECT_URL as string
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
 
@@ -34,4 +35,20 @@ export async function createBlog(title: string, content: string, image_url: stri
       return{error: 'Unable to create blog post.'};
     }
     return blog;
+}
+
+//Returns all user blogs
+export async function getAllUserBlogs(userId: string) {
+  const {data,error} = await supabase
+    .from('blogs')
+    .select()
+    .eq('user_id', userId)
+    .order('created_at', {ascending: false})
+
+    if(error) {
+      console.log(error)
+      return {error: "Failed to get all user blogs. Try again"}
+    }
+
+  return data
 }
