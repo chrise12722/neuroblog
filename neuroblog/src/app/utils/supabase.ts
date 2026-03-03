@@ -38,17 +38,51 @@ export async function createBlog(title: string, content: string, image_url: stri
 }
 
 //Returns all user blogs
-export async function getAllUserBlogs(userId: string) {
-  const {data,error} = await supabase
-    .from('blogs')
-    .select()
-    .eq('user_id', userId)
-    .order('created_at', {ascending: false})
+export async function getAllUserBlogs({
+  user_id,
+  query,
+  page = 1,
+  limit = 12,
+  fetchLimit,
+} : {
+  user_id: string
+  query?: string;
+  page?: number
+  limit?: number
+  fetchLimit?: number
+}) {
+  const pageSize = fetchLimit ?? limit;
+  const from = (page - 1) * limit;
+  const to = from + pageSize - 1;
+
+  if(query) {
+    const {data: searchUserBlogs, error} = await supabase
+      .from('blogs')
+      .select()
+      .eq('user_id', user_id)
+      .ilike('title', query)
+      .order('created_at', {ascending: false})
+      .range(from, to)
 
     if(error) {
       console.log(error)
       return {error: "Failed to get all user blogs. Try again"}
     }
+    return searchUserBlogs
+  }
+  else {
+    const {data: userBlogs,error} = await supabase
+      .from('blogs')
+      .select()
+      .eq('user_id', user_id)
+      .order('created_at', {ascending: false})
+      .range(from, to)
 
-  return data
+      if(error) {
+        console.log(error)
+        return {error: "Failed to get all user blogs. Try again"}
+      }
+
+    return userBlogs
+  }
 }
