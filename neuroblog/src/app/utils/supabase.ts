@@ -86,3 +86,19 @@ export async function getAllUserBlogs({
     return userBlogs
   }
 }
+
+//Fetch indivdual user blog
+export async function getBlogById(id: number, userId: string) {
+  const {data, error} = await supabase
+    .from('blogs')
+    .select()
+    .eq('id', id)
+    .single()
+  if (!data) {
+    redirect('/')
+  }
+  if (error) {
+    return {error: "Blog not found. Please try again"}
+  }
+  return data
+}
