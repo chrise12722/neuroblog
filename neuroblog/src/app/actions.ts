@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { ChatCompletion } from 'openai/resources/chat/completions';
 import openai from './utils/openai';
 import { createBlog, uploadImage } from './utils/supabase';
+import { supabase } from './utils/supabase';
 
 export async function createCompletion(topic: string, keywords: string, length: string) {
   const user = await currentUser();
@@ -56,4 +57,18 @@ export async function createCompletion(topic: string, keywords: string, length: 
   }
   const blog = await createBlog(topic, response, permanentimage_url, user.id, user.username)
   return blog;
+}
+
+//Delete blog from database
+export async function deleteBlog(blogId: number, userId: string) {
+  const {error: deleteError} = await supabase
+    .from('blogs')
+    .delete()
+    .eq('id', blogId)
+    .eq('user_id', userId)
+
+  if (deleteError) {
+    console.log(deleteError);
+    return {error: 'Unable to delete blog post. Please try again'};
+  }
 }

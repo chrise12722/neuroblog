@@ -5,6 +5,7 @@ import { currentUser } from "@clerk/nextjs/server"
 import { notFound } from 'next/navigation';
 import { ChevronLeft } from "lucide-react";
 import { getBlogById } from "@/app/utils/supabase";
+import { DeleteButton } from '@/components/DeleteButton';
 
 export default async function UserBlog({ params }: { params: Promise<{ id: string }> }) {
   const user = await currentUser()
@@ -20,13 +21,18 @@ export default async function UserBlog({ params }: { params: Promise<{ id: strin
   }
   return (
     <div className='max-w-3xl mx-auto px-4 py-6'>
-      <Link
-        href='/saved-blogs'
-        className='inline-flex items-center text-sm font-light text-gray-500 hover:text-gray-800 mb-6'
-      >
-        <ChevronLeft strokeWidth={1} size={20} />
-        <span>Go Back</span>
-      </Link>
+      <div className='flex justify-between mr-2 mt-2'>
+        <Link
+          href='/saved-blogs'
+          className='inline-flex items-center text-sm font-light text-gray-500 hover:text-gray-800 mb-6'
+        >
+          <ChevronLeft strokeWidth={1} size={20} />
+          <span>Go Back</span>
+        </Link>
+        <div className='flex flex-row gap-1 mb-1'>
+          <DeleteButton blogId={blogId} userId={user.id} />
+        </div>
+      </div>
       <div className='relative w-full aspect-video mb-8 rounded-lg overflow-hidden'>
         <Image
           src={currentBlog.image_url}
