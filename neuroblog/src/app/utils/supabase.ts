@@ -148,3 +148,14 @@ export async function getAllSharedBlogs({
     return sharedBlogs
   }
 }
+
+//Checks if blog is marked as shared
+export async function isBlogShared(id: number) {
+  const {data} = await supabase
+    .from('blogs')
+    .select()
+    .eq('id', id)
+    .eq('is_shared', true)
+
+  return data && data.length > 0
+}

@@ -4,8 +4,9 @@ import Markdown from 'react-markdown';
 import { currentUser } from "@clerk/nextjs/server"
 import { notFound } from 'next/navigation';
 import { ChevronLeft } from "lucide-react";
-import { getBlogById } from "@/app/utils/supabase";
+import { getBlogById, isBlogShared } from "@/app/utils/supabase";
 import { DeleteButton } from '@/components/DeleteButton';
+import { ShareButtons } from '@/components/ShareButtons';
 
 export default async function UserBlog({ params }: { params: Promise<{ id: string }> }) {
   const user = await currentUser()
@@ -30,6 +31,7 @@ export default async function UserBlog({ params }: { params: Promise<{ id: strin
           <span>Go Back</span>
         </Link>
         <div className='flex flex-row gap-1 mb-1'>
+          <ShareButtons blog={currentBlog} isShared={!!(await isBlogShared(blogId))} />
           <DeleteButton blogId={blogId} userId={user.id} />
         </div>
       </div>

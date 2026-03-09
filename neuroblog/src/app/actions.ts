@@ -4,6 +4,7 @@ import { ChatCompletion } from 'openai/resources/chat/completions';
 import openai from './utils/openai';
 import { createBlog, uploadImage } from './utils/supabase';
 import { supabase } from './utils/supabase';
+import { BlogStructure } from './interfaces';
 
 export async function createCompletion(topic: string, keywords: string, length: string) {
   const user = await currentUser();
@@ -71,4 +72,31 @@ export async function deleteBlog(blogId: number, userId: string) {
     console.log(deleteError);
     return {error: 'Unable to delete blog post. Please try again'};
   }
+}
+
+//Make blog publicily available
+export async function shareBlog(blog: BlogStructure) {
+  const {error: shareError} = await supabase
+    .from('blogs')
+    .update({is_shared: true})
+    .eq('id', blog.id)
+
+  if (shareError) {
+    return {error: "Failed to share blog. Please try again"};
+  }
+  return {success: true};
+}
+
+//Make blog private
+export async function unshareBlog(blog: BlogStructure) {
+  const {error: unshareError} = await supabase
+    .from('blogs')
+    .update({is_shared: false})
+    .eq('id', blog.id)
+
+  if (unshareError) {
+    console.log(unshareError)
+    return {error: "Unable to unshare blog. Please try again"};
+  }
+  return {success: true};
 }
