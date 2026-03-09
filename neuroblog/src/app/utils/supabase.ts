@@ -64,7 +64,7 @@ export async function getAllUserBlogs({
       .order('created_at', {ascending: false})
       .range(from, to)
 
-    if(error) {
+    if (error) {
       console.log(error)
       return {error: "Failed to get all user blogs. Try again"}
     }
@@ -78,11 +78,10 @@ export async function getAllUserBlogs({
       .order('created_at', {ascending: false})
       .range(from, to)
 
-      if(error) {
-        console.log(error)
-        return {error: "Failed to get all user blogs. Try again"}
-      }
-
+    if (error) {
+      console.log(error)
+      return {error: "Failed to get all user blogs. Try again"}
+    }
     return userBlogs
   }
 }
@@ -101,4 +100,51 @@ export async function getBlogById(id: number, userId: string) {
     return {error: "Blog not found. Please try again"}
   }
   return data
+}
+
+//Fetch all shared blogs
+export async function getAllSharedBlogs({
+  query,
+  page = 1,
+  limit = 12,
+  fetchLimit,
+}: {
+  query?: string;
+  page?: number;
+  limit?: number;
+  fetchLimit?: number
+}) {
+  const pageSize = fetchLimit ?? limit;
+  const from = (page - 1) * limit;
+  const to = from + pageSize - 1;
+
+  if(query) {
+    const {data: searchSharedBlogs, error} = await supabase
+      .from('blogs')
+      .select('*')
+      .eq('is_shared', true)
+      .ilike('title', query)
+      .order('created_at', {ascending: false})
+      .range(from, to)
+
+    if (error) {
+      console.log(error)
+      return {error: "Failed to get all shared blogs. Try again"}
+    }
+    return searchSharedBlogs
+  }
+  else {
+    const {data: sharedBlogs, error} = await supabase
+      .from('blogs')
+      .select('*')
+      .eq('is_shared', true)
+      .order('created_at', {ascending: false})
+      .range(from, to)
+
+    if (error) {
+      console.log(error)
+      return {error: "Failed to get all shared blogs. Try again"}
+    }
+    return sharedBlogs
+  }
 }

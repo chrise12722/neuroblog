@@ -1,21 +1,23 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import clsx from 'clsx';
-import { currentUser } from '@clerk/nextjs/server';
-import { toast } from 'sonner';
-import { Card, CardContent } from '@/components/ui/card';
-import { formatDate } from '@/lib/utils';
-import { getAllUserBlogs } from '../utils/supabase';
+import Image from "next/image";
+import Link from "next/link";
+import clsx from "clsx";
+import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
+import { currentUser } from "@clerk/nextjs/server";
+import { getAllSharedBlogs } from "../utils/supabase";
 import { BlogStructure } from "../interfaces";
-import { Search } from '@/components/Search';
+import { Search } from "@/components/Search";
 
-export default async function SavedBlogs({
-  searchParams
+
+
+export default async function ExploreBlogs({
+  searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>,
 }) {
   const searchParamsObj = await searchParams;
-  //Params for getAllUserBlogs function
+  // Params for getAllSharedBlogs funciton
   const page = typeof searchParamsObj.page === 'string' ? Number(searchParamsObj.page) : 1;
   const limit = typeof searchParamsObj.limit === 'string' ? Number(searchParamsObj.limit) : 12;
   const search = Array.isArray(searchParamsObj.search) ? searchParamsObj.search[0] : searchParamsObj.search;
@@ -25,7 +27,7 @@ export default async function SavedBlogs({
     return { error: 'User not authenticated' };
   }
 
-  const blogs = await getAllUserBlogs({ user_id: user.id, query: search, page, limit, fetchLimit: limit + 1 });
+  const blogs = await getAllSharedBlogs({ query: search, page, limit, fetchLimit: limit + 1 });
   if (!Array.isArray(blogs) && blogs.error) {
     toast(blogs.error);
   }
@@ -36,13 +38,13 @@ export default async function SavedBlogs({
   return (
     <>
       <div className='mt-5 ml-5 sm:flex sm:justify-between mr-2'>
-        <h1 className='font-bold text-2xl/6 md:text-3xl lg:text-4xl'>View Saved Blogs</h1>
+        <h1 className='font-bold text-2xl/6 md:text-3xl lg:text-4xl'>View Shared Blogs</h1>
         <div className='flex flex-col gap-2 sm:flex-row mt-4'>
           <Search search={search} />
           <div className='flex flex-row justify-center gap-2'>
             <Link
               href={{
-                pathname: '/saved-blogs',
+                pathname: '/explore-blogs',
                 query: {
                   ...(search ? { search } : {}),
                   page: page > 1 ? page - 1 : 1
@@ -55,7 +57,7 @@ export default async function SavedBlogs({
             </Link>
             <Link
               href={{
-                pathname: '/saved-blogs',
+                pathname: '/explore-blogs',
                 query: {
                   ...(search ? { search } : {}),
                   page: page + 1
@@ -74,7 +76,7 @@ export default async function SavedBlogs({
           displayedBlogs?.map((blog: BlogStructure) => (
             <Card key={blog.id} className='overflow-hidden w-full sm:w-1/2 xl:w-1/3 2xl:w-1/4'>
               <CardContent className='p-0'>
-                <Link href={`/saved-blogs/${blog.id}`} key={blog.id}>
+                <Link href={`#`} key={blog.id}>
                   <Image
                     alt=''
                     src={blog.image_url}
