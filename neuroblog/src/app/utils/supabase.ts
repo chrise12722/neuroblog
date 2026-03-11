@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 
 const supabaseUrl = process.env.SUPABASE_PROJECT_URL as string
@@ -95,7 +96,25 @@ export async function getBlogById(id: number, userId: string) {
     .eq("user_id", userId)
     .single()
   if (!data) {
-    redirect('/')
+    toast("Blog not found. Please try again")
+    redirect('/saved-blogs')
+  }
+  if (error) {
+    return {error: "Blog not found. Please try again"}
+  }
+  return data
+}
+
+//Fetch shared blog
+export async function getSharedBlogById(id: number) {
+  const {data,error} = await supabase
+    .from('blogs')
+    .select('*')
+    .eq('id', id)
+    .single()
+  if (!data) {
+    toast("Blog not found. Please try again")
+    redirect('/explore-blogs')
   }
   if (error) {
     return {error: "Blog not found. Please try again"}

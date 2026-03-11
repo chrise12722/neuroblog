@@ -76,7 +76,7 @@ export default async function ExploreBlogs({
           displayedBlogs?.map((blog: BlogStructure) => (
             <Card key={blog.id} className='overflow-hidden w-full sm:w-1/2 xl:w-1/3 2xl:w-1/4'>
               <CardContent className='p-0'>
-                <Link href={`#`} key={blog.id}>
+                <Link href={`/explore-blogs/${blog.id}`} key={blog.id}>
                   <Image
                     alt=''
                     src={blog.image_url}
