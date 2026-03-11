@@ -92,6 +92,7 @@ export async function getBlogById(id: number, userId: string) {
     .from('blogs')
     .select()
     .eq('id', id)
+    .eq("user_id", userId)
     .single()
   if (!data) {
     redirect('/')
