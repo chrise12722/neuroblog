@@ -14,9 +14,9 @@ export async function createCompletion(topic: string, keywords: string, length: 
   }
 
   const lengthInstructions: Record<string, { instruction: string; maxTokens: number }> = {
-    Short: { instruction: 'Write exactly 250–300 words. Stop writing once you reach 300 words.', maxTokens: 450 },
-    Medium: { instruction: 'Write exactly 400–600 words. Stop writing once you reach 600 words.', maxTokens: 900 },
-    Long: { instruction: 'Write exactly 700–1000 words. Stop writing once you reach 1000 words.', maxTokens: 1500 },
+    Short: { instruction: 'The blog post must be between 300 and 400 words. Count carefully and do not exceed 400 words.', maxTokens: 700 },
+    Medium: { instruction: 'The blog post must be between 600 and 800 words. Count carefully and do not exceed 800 words.', maxTokens: 1400 },
+    Long: { instruction: 'The blog post must be between 1000 and 1300 words. Count carefully and do not exceed 1300 words.', maxTokens: 2400 },
   };
   const { instruction: lengthInstruction, maxTokens } = lengthInstructions[length] ?? lengthInstructions['Medium'];
 
