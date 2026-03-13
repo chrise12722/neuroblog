@@ -13,15 +13,23 @@ export async function createCompletion(topic: string, keywords: string, length: 
     return {error: 'User not authenticated'};
   }
 
+  const lengthInstructions: Record<string, { instruction: string; maxTokens: number }> = {
+    Short: { instruction: 'Write exactly 250–300 words. Stop writing once you reach 300 words.', maxTokens: 450 },
+    Medium: { instruction: 'Write exactly 400–600 words. Stop writing once you reach 600 words.', maxTokens: 900 },
+    Long: { instruction: 'Write exactly 700–1000 words. Stop writing once you reach 1000 words.', maxTokens: 1500 },
+  };
+  const { instruction: lengthInstruction, maxTokens } = lengthInstructions[length] ?? lengthInstructions['Medium'];
+
   //Generate blog post using openai
   const completion: ChatCompletion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
+    max_tokens: maxTokens,
     messages: [
      {
         role: 'user',
         content: `Write an SEO-optimized blog post about the following topic: ${topic}. The blog should clearly explain the topic and include relevant information, context,
                   and insights typical of a high-quality blog post. If any keywords are provided, be sure to incorporate and discuss them naturally: ${keywords} (ignore if empty).
-                  The desired length is: ${length}. Use the following guidelines: Short: ≤ 300 words; Medium: 301 to 600 words; Long: 601 to 1000 words.
+                  ${lengthInstruction}
                   Format the response in Markdown, and make only the blog title bold. Do not include any extra text before or after the post.`,
       }
     ],
