@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { currentUser } from '@clerk/nextjs/server';
 import { getSharedBlogById } from '@/app/utils/supabase';
+import { LikeButton } from '@/components/LikeButton';
 
 export default async function SharedBlog({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,7 +18,7 @@ export default async function SharedBlog({ params }: { params: Promise<{ id: str
   const blogId = Number(id);
   const currentBlog = await getSharedBlogById(blogId);
 
-  if (!currentBlog.content || !currentBlog.image_url) {
+  if ('error' in currentBlog || !currentBlog.content || !currentBlog.image_url) {
     notFound();
   }
 
@@ -25,14 +26,14 @@ export default async function SharedBlog({ params }: { params: Promise<{ id: str
     <div className='max-w-3xl mx-auto px-4 py-6'>
       <div className='flex justify-between mr-2 mt-2'>
         <Link
-          href='/saved-blogs'
+          href='/explore-blogs'
           className='inline-flex items-center text-sm font-light text-gray-500 hover:text-gray-800 mb-6'
         >
           <ChevronLeft strokeWidth={1} size={20} />
           <span>Go Back</span>
         </Link>
         <div className='mb-1'>
-          {/* Like Button Goes Here */}
+          <LikeButton blogId={blogId} userId={user.id} liked={currentBlog.user_likes.some((like) => like.user_id === user.id)} likes={currentBlog.likes} />
         </div>
       </div>
       <div className='relative w-full aspect-video mb-8 rounded-lg overflow-hidden'>

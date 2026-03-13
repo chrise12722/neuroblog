@@ -5,6 +5,7 @@ import openai from './utils/openai';
 import { createBlog, uploadImage } from './utils/supabase';
 import { supabase } from './utils/supabase';
 import { BlogStructure } from './interfaces';
+import { incrementLikes, decrementLikes, isBlogLiked } from './utils/supabase';
 
 export async function createCompletion(topic: string, keywords: string, length: string) {
   const user = await currentUser();
@@ -61,12 +62,14 @@ export async function createCompletion(topic: string, keywords: string, length: 
 }
 
 //Delete blog from database
-export async function deleteBlog(blogId: number, userId: string) {
+export async function deleteBlog(blogId: number) {
+  const user = await currentUser();
+  if (!user) return {error: 'Unauthorized user'}
   const {error: deleteError} = await supabase
     .from('blogs')
     .delete()
     .eq('id', blogId)
-    .eq('user_id', userId)
+    .eq('user_id', user.id)
 
   if (deleteError) {
     console.log(deleteError);
@@ -100,3 +103,24 @@ export async function unshareBlog(blog: BlogStructure) {
   }
   return {success: true};
 }
+
+//Server actions: authenticate user before calling supabase utilities
+export async function handleLike(blogId: number) {
+  const user = await currentUser();
+  if (!user) return {error: 'Unauthorized'};
+  return incrementLikes(blogId, user.id);
+}
+
+export async function handleUnlike(blogId: number) {
+  const user = await currentUser();
+  if (!user) return {error: 'Unauthorized'};
+  return decrementLikes(blogId, user.id);
+}
+
+export async function isLiked(blogId: number) {
+  const user = await currentUser();
+  if (!user) return {error: 'Unauthorized'};
+  return isBlogLiked(blogId, user.id);
+}
+
+

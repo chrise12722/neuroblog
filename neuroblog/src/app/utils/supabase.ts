@@ -3,10 +3,10 @@ import { redirect } from "next/navigation";
 import { toast } from "sonner";
 
 
-const supabaseUrl = process.env.SUPABASE_PROJECT_URL as string
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
+const supabaseUrl = process.env.SUPABASE_PROJECT_URL as string;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 //Upload image to supabase storage
 export async function uploadImage(imageBuffer: Buffer) {
@@ -30,7 +30,7 @@ export async function createBlog(title: string, content: string, image_url: stri
   const {data: blog, error: blogError} = await supabase
     .from('blogs')
     .insert([{title: title, content: content, image_url: image_url, user_id: user_id, username: username}])
-    .select()
+    .select();
   
     if(blogError) {
       return{error: 'Unable to create blog post.'};
@@ -63,13 +63,13 @@ export async function getAllUserBlogs({
       .eq('user_id', user_id)
       .ilike('title', query)
       .order('created_at', {ascending: false})
-      .range(from, to)
+      .range(from, to);
 
     if (error) {
       console.log(error)
-      return {error: "Failed to get all user blogs. Try again"}
+      return {error: "Failed to get all user blogs. Try again"};
     }
-    return searchUserBlogs
+    return searchUserBlogs;
   }
   else {
     const {data: userBlogs,error} = await supabase
@@ -77,13 +77,13 @@ export async function getAllUserBlogs({
       .select()
       .eq('user_id', user_id)
       .order('created_at', {ascending: false})
-      .range(from, to)
+      .range(from, to);
 
     if (error) {
       console.log(error)
-      return {error: "Failed to get all user blogs. Try again"}
+      return {error: "Failed to get all user blogs. Try again"};
     }
-    return userBlogs
+    return userBlogs;
   }
 }
 
@@ -94,32 +94,48 @@ export async function getBlogById(id: number, userId: string) {
     .select()
     .eq('id', id)
     .eq("user_id", userId)
-    .single()
+    .single();
   if (!data) {
-    toast("Blog not found. Please try again")
-    redirect('/saved-blogs')
+    toast("Blog not found. Please try again");
+    redirect('/saved-blogs');
   }
   if (error) {
-    return {error: "Blog not found. Please try again"}
+    return {error: "Blog not found. Please try again"};
   }
-  return data
+  return data;
 }
 
 //Fetch shared blog
 export async function getSharedBlogById(id: number) {
   const {data,error} = await supabase
     .from('blogs')
-    .select('*')
+    .select(`
+      id,
+      created_at,
+      title,
+      content,
+      image_url,
+      user_id,
+      is_shared,
+      likes,
+      username,
+      user_likes (
+        id,
+        user_id,
+        blog_id
+        )`
+      )
     .eq('id', id)
-    .single()
-  if (!data) {
-    toast("Blog not found. Please try again")
-    redirect('/explore-blogs')
-  }
+    .single();
+
   if (error) {
-    return {error: "Blog not found. Please try again"}
+    return {error: "Blog not found. Please try again"};
   }
-  return data
+  if (!data) {
+    toast("Blog not found. Please try again");
+    redirect('/explore-blogs');
+  }
+  return data;
 }
 
 //Fetch all shared blogs
@@ -144,28 +160,28 @@ export async function getAllSharedBlogs({
       .select('*')
       .eq('is_shared', true)
       .ilike('title', query)
-      .order('created_at', {ascending: false})
-      .range(from, to)
+      .order('likes', {ascending: false})
+      .range(from, to);
 
     if (error) {
-      console.log(error)
-      return {error: "Failed to get all shared blogs. Try again"}
+      console.log(error);
+      return {error: "Failed to get all shared blogs. Try again"};
     }
-    return searchSharedBlogs
+    return searchSharedBlogs;
   }
   else {
     const {data: sharedBlogs, error} = await supabase
       .from('blogs')
       .select('*')
       .eq('is_shared', true)
-      .order('created_at', {ascending: false})
-      .range(from, to)
+      .order('likes', {ascending: false})
+      .range(from, to);
 
     if (error) {
-      console.log(error)
-      return {error: "Failed to get all shared blogs. Try again"}
+      console.log(error);
+      return {error: "Failed to get all shared blogs. Try again"};
     }
-    return sharedBlogs
+    return sharedBlogs;
   }
 }
 
@@ -175,7 +191,95 @@ export async function isBlogShared(id: number) {
     .from('blogs')
     .select()
     .eq('id', id)
-    .eq('is_shared', true)
+    .eq('is_shared', true);
 
+  return data && data.length > 0;
+}
+
+//Check blog's like count
+export async function viewLikes(blogId: number) {
+  const {data, error} = await supabase
+    .from('blogs')
+    .select('likes')
+    .eq('id', blogId)
+    .single();
+
+  if (error) {
+    console.log(error);
+  }
+  else if (!data) {
+    return 0;
+  }
+  return data?.likes || 0
+}
+
+//Add like to database
+export async function incrementLikes(blogId: number, userId: string) {
+  const {error: likeError} = await supabase.rpc('increment_blog_likes', {blogid: blogId})
+
+  if (likeError) {
+    console.log(likeError);
+    return {error: 'Unable to like blog post. Please try again'};
+  }
+
+  const {error: recordError} = await supabase
+    .from('user_likes')
+    .insert([{ user_id: userId, blog_id: blogId }])
+  
+  if (recordError) {
+    console.log(recordError);
+    return {error: 'Unable to record like. Please try again'};
+  }
+  return {success: true}
+}
+
+//Remove like from database
+export async function decrementLikes(blogId: number, userId: string) {
+  const {error: likeError} = await supabase.rpc('decrement_blog_likes', {blogid: blogId});
+
+  if (likeError) {
+    console.log(likeError);
+    return {error: 'Failed to decrease like. Please try again'};
+  }
+
+  const {error: recordError} = await supabase
+    .from('user_likes')
+    .delete()
+    .eq('user_id', userId)
+    .eq('blog_id', blogId);
+
+  if (recordError) {
+    console.log(recordError);
+    return {error: 'Failed to delete like. Please try again'};
+  }
+  return {success: true}
+}
+
+//Get all blog IDs liked by a user from a given list
+export async function getUserLikedBlogIds(userId: string, blogIds: number[]): Promise<number[]> {
+  const { data, error } = await supabase
+    .from('user_likes')
+    .select('blog_id')
+    .eq('user_id', userId)
+    .in('blog_id', blogIds);
+
+  if (error) {
+    console.log(error);
+    return [];
+  }
+  return data ? data.map((row) => row.blog_id) : [];
+}
+
+//Check if user has liked a blog
+export async function isBlogLiked(blogId: number, userId: string) {
+  const {data, error} = await supabase
+    .from('user_likes')
+    .select()
+    .eq('user_id', userId)
+    .eq('blog_id', blogId)
+
+  if (error) {
+    console.log(error)
+  }
   return data && data.length > 0
 }

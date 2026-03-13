@@ -87,6 +87,9 @@ export default async function SavedBlogs({
                     <p className='text-xs text-gray-600'>
                       {formatDate(String(blog.created_at))}
                     </p>
+                    {blog.is_shared && (
+                      <p className='text-sm text-gray-500 mt-1'>❤️ {blog.likes}</p>
+                    )}
                   </div>
                 </Link>
               </CardContent>

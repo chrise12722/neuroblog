@@ -5,9 +5,10 @@ import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
-import { getAllSharedBlogs } from "../utils/supabase";
+import { getAllSharedBlogs, getUserLikedBlogIds } from "../utils/supabase";
 import { BlogStructure } from "../interfaces";
 import { Search } from "@/components/Search";
+import { LikeButton } from "@/components/LikeButton";
 
 
 
@@ -34,6 +35,9 @@ export default async function ExploreBlogs({
   const hasNextPage = Array.isArray(blogs) && blogs.length > limit;
   const displayedBlogs = Array.isArray(blogs) ? blogs.slice(0, limit) : blogs;
   const hitLimit = !hasNextPage;
+
+  const blogIds = Array.isArray(displayedBlogs) ? displayedBlogs.map((b: BlogStructure) => b.id) : [];
+  const likedBlogIds = new Set(await getUserLikedBlogIds(user.id, blogIds));
 
   return (
     <>
@@ -94,6 +98,9 @@ export default async function ExploreBlogs({
                     </p>
                   </div>
                 </Link>
+                <div className='px-4 pb-3'>
+                  <LikeButton blogId={blog.id} userId={user.id} liked={likedBlogIds.has(blog.id)} likes={blog.likes} />
+                </div>
               </CardContent>
             </Card>
           ))
