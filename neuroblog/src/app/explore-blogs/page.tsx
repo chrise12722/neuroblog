@@ -86,6 +86,9 @@ export default async function ExploreBlogs({
                   />
                   <div className='px-4 pb-3 pt-2'>
                     <h3 className='font-medium'>{blog.title}</h3>
+                    <p className='text-sm'>
+                      👤: {blog.username}
+                    </p>
                     <p className='text-xs text-gray-600'>
                       {formatDate(String(blog.created_at))}
                     </p>
