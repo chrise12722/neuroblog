@@ -42,7 +42,10 @@ export default async function ExploreBlogs({
   return (
     <>
       <div className='mt-5 ml-5 sm:flex sm:justify-between mr-2'>
-        <h1 className='font-bold text-2xl/6 md:text-3xl lg:text-4xl'>View Shared Blogs</h1>
+        <h1 className='font-bold text-2xl/6 md:text-3xl lg:text-4xl bg-gradient-to-r from-blue-600 via-cyan-500 
+        to-indigo-600 bg-clip-text text-transparent tracking-tight'>
+          View Shared Blogs
+        </h1>
         <div className='flex flex-col gap-2 sm:flex-row mt-4'>
           <Search search={search} />
           <div className='flex flex-row justify-center gap-2'>

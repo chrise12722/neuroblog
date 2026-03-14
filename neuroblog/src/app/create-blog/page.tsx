@@ -34,7 +34,10 @@ export default function CreateBlog() {
   return (
     <div className='mt-10 px-4 sm:px-6 flex flex-col lg:flex-row gap-6 items-start'>
       <div className={`w-full ${blogContent ? 'lg:w-72 lg:shrink-0' : 'lg:max-w-md lg:mx-auto'}`}>
-        <h1 className='font-bold text-4xl mb-6'>Create a Blog</h1>
+        <h1 className='font-bold text-4xl mb-6 bg-gradient-to-r from-blue-600 via-cyan-500 
+        to-indigo-600 bg-clip-text text-transparent tracking-tight'>
+          Create a Blog
+        </h1>
         <form className='flex flex-col gap-4' action={formAction}>
           <div className='flex flex-col gap-1'>
             <label htmlFor='blogTopic' className='text-sm font-medium'>Blog Topic</label>
