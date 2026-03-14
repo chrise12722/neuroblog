@@ -133,3 +133,51 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .prose {
+    @apply text-base leading-7 text-foreground;
+  }
+  .prose h1 {
+    @apply text-3xl font-bold mt-8 mb-4;
+  }
+  .prose h2 {
+    @apply text-2xl font-semibold mt-6 mb-3;
+  }
+  .prose h3 {
+    @apply text-xl font-semibold mt-5 mb-2;
+  }
+  .prose p {
+    @apply mb-4;
+  }
+  .prose ul {
+    @apply list-disc pl-6 mb-4 space-y-1;
+  }
+  .prose ol {
+    @apply list-decimal pl-6 mb-4 space-y-1;
+  }
+  .prose li {
+    @apply leading-7;
+  }
+  .prose strong {
+    @apply font-semibold;
+  }
+  .prose em {
+    @apply italic;
+  }
+  .prose blockquote {
+    @apply border-l-4 border-border pl-4 italic text-muted-foreground my-4;
+  }
+  .prose code {
+    @apply bg-muted text-foreground rounded px-1 py-0.5 text-sm font-mono;
+  }
+  .prose pre {
+    @apply bg-muted rounded-lg p-4 overflow-x-auto mb-4 text-sm font-mono;
+  }
+  .prose a {
+    @apply text-blue-500 underline hover:text-blue-400;
+  }
+  .prose hr {
+    @apply border-border my-6;
+  }
+}
