@@ -13,7 +13,7 @@ export const DeleteButton = ({ blogId, userId }: DeleteButtonProps) => {
   const router = useRouter();
 
   const deleteUserBlog = async () => {
-    const result = await deleteBlog(blogId, userId);
+    const result = await deleteBlog(blogId);
     if (result && result.error) {
       toast(result.error);
     } else {

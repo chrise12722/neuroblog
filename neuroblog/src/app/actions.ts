@@ -39,7 +39,7 @@ export async function createCompletion(topic: string, keywords: string, length: 
       model: 'dall-e-3',
       prompt: `Create a high-quality blog cover image that visually represents this topic: "${topic}"`,
       n: 1,
-      size: '1024x1024'
+      size: '1792x1024'
     }),
   ]);
 
