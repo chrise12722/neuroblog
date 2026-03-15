@@ -22,7 +22,7 @@ export default async function SavedBlogs({
 
   const user = await currentUser();
   if (!user) {
-    return { error: 'User not authenticated' };
+    return <div>Please sign in to view blogs.</div>;
   }
 
   const blogs = await getAllUserBlogs({ user_id: user.id, query: search, page, limit, fetchLimit: limit + 1 });
