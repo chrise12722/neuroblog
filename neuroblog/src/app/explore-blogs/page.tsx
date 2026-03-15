@@ -25,7 +25,7 @@ export default async function ExploreBlogs({
 
   const user = await currentUser();
   if (!user) {
-    return { error: 'User not authenticated' };
+    return <div>Please sign in to view blogs.</div>;
   }
 
   const blogs = await getAllSharedBlogs({ query: search, page, limit, fetchLimit: limit + 1 });
