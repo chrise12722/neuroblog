@@ -5,7 +5,7 @@ technologies like **Next.js**, **Typescript**, and **Supabase**.
 
 ## 🚀 Live Demo
 
-Link to live project: neuroblog-zeta.vercel.app/
+Link to live project: [neuroblog-zeta.vercel.app/]
 
 
 https://github.com/user-attachments/assets/0d8ef240-6529-45f1-8c1a-4af7eda95128
